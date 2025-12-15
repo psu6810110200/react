@@ -1,27 +1,35 @@
 import { useState } from 'react';
-import { Button, Form, Input, Alert } from 'antd';
+import { Button, Form, Input, Alert, Checkbox } from 'antd';
 import axios from 'axios'
-import { useNavigate } from 'react-router-dom';
 
 const URL_AUTH = "/api/auth/login"
 
 export default function LoginScreen(props) {
   const [isLoading, setIsLoading] = useState(false)
   const [errMsg, setErrMsg] = useState(null)
-  const navigate = useNavigate();
 
   const handleLogin = async (formData) => {
     try{
       setIsLoading(true)
       setErrMsg(null)
-      const response = await axios.post(URL_AUTH, formData);
-      const token = response.data.access_token;
-      axios.defaults.headers.common = { 'Authorization': `bearer ${token}` }
 
-      navigate('/');
+      const { remember, ...loginPayload } = formData;
+      const response = await axios.post(URL_AUTH, loginPayload);
+      const token = response.data.access_token;
+
+      if (remember) {
+        localStorage.setItem('token', token);
+      } else {
+        sessionStorage.setItem('token', token); 
+      }
+
+      axios.defaults.headers.common = { 'Authorization': `bearer ${token}` }
       
+      window.location.href = '/';
+
     } catch(err) { 
       console.log(err)
+      const message = err.response?.data?.message || err.message;
       setErrMsg(err.message)
     } finally { setIsLoading(false) }
   }
@@ -48,6 +56,13 @@ export default function LoginScreen(props) {
         name="password"
         rules={[{required: true},]}>
         <Input.Password />
+      </Form.Item>
+
+      <Form.Item 
+        name="remember" 
+        valuePropName="checked" 
+      >
+        <Checkbox>Remember me</Checkbox>
       </Form.Item>
 
       <Form.Item>

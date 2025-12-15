@@ -1,6 +1,6 @@
 import './App.css'
 import { useState, useEffect } from 'react';
-import { Divider, Spin } from 'antd';
+import { Divider, Spin, Button } from 'antd';
 import axios from 'axios'
 import BookList from './components/BookList'
 import AddBook from './components/AddBook';
@@ -15,6 +15,15 @@ function BookScreen() {
   const [categories, setCategories] = useState([]);
   const [editBook, setEditBook] = useState(null);
 
+  const handleLogout =() => {
+
+    localStorage.removeItem('token')
+    sessionStorage.removeItem('token')
+
+    delete axios.defaults.headers.common['Authorization']
+    window.location.href ='/login';
+
+  }
   const fetchCategories = async () => {
     try {
       const response = await axios.get(URL_CATEGORY);
@@ -97,6 +106,12 @@ function BookScreen() {
 
   return (
     <>
+      <div style={{ display: "flex", justifyContent: "flex-end", padding: "10px" }}>
+        <Button danger type="primary" onClick={handleLogout}>
+          Logout
+        </Button>
+      </div>
+      
       <div style={{ display: "flex", justifyContent: "center", marginBottom: "2em" }}>
         <AddBook categories={categories} onBookAdded={handleAddBook}/>
       </div>
