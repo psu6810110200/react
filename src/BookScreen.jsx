@@ -3,19 +3,21 @@ import { useState, useEffect } from 'react';
 import { Divider, Spin, Button } from 'antd';
 import axios from 'axios'
 import BookList from './components/BookList'
-import AddBook from './components/AddBook';
-import EditBook from './components/EditBook';
+import { useNavigate } from 'react-router-dom';
+//import AddBook from './components/AddBook';
+//import EditBook from './components/EditBook';
 
 const URL_BOOK = "/api/book"
-const URL_CATEGORY = "/api/book-category"
+//const URL_CATEGORY = "/api/book-category"
 
 function BookScreen() {
   const [bookData, setBookData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [categories, setCategories] = useState([]);
-  const [editBook, setEditBook] = useState(null);
+  const navigate = useNavigate();
+  //const [categories, setCategories] = useState([]);
+  //const [editBook, setEditBook] = useState(null);
 
-  const handleLogout =() => {
+  /*const handleLogout =() => {
 
     localStorage.removeItem('token')
     sessionStorage.removeItem('token')
@@ -23,8 +25,8 @@ function BookScreen() {
     delete axios.defaults.headers.common['Authorization']
     window.location.href ='/login';
 
-  }
-  const fetchCategories = async () => {
+  }*/
+  /*const fetchCategories = async () => {
     try {
       const response = await axios.get(URL_CATEGORY);
       setCategories(response.data.map(cat => ({
@@ -34,7 +36,7 @@ function BookScreen() {
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
-  }
+  }*/
 
   const fetchBooks = async () => {
     setLoading(true);
@@ -48,7 +50,7 @@ function BookScreen() {
     }
   }
 
-  const handleAddBook = async (book) => {
+  /*const handleAddBook = async (book) => {
     setLoading(true)
     try {
       const response = await axios.post(URL_BOOK, book);
@@ -58,7 +60,7 @@ function BookScreen() {
     } finally {
       setLoading(false);
     }
-  }
+  }*/
 
   const handleLikeBook = async (book) => {
     setLoading(true)
@@ -84,7 +86,7 @@ function BookScreen() {
     }
   }
 
-  const handleEditBook = async (book) => {
+  /*const handleEditBook = async (book) => {
     setLoading(true)
     try {
       const editedData = {...book, 'price': Number(book.price), 'stock': Number(book.stock)}
@@ -96,42 +98,32 @@ function BookScreen() {
     } finally {
       setLoading(false);
       setEditBook(null);
-    }
-  }
+    }*/
+  
 
   useEffect(() => {
-    fetchCategories();
+    //fetchCategories();
     fetchBooks();
   }, []);
 
   return (
     <>
-      <div style={{ display: "flex", justifyContent: "flex-end", padding: "10px" }}>
-        <Button danger type="primary" onClick={handleLogout}>
-          Logout
+      <div style={{ display: "flex", justifyContent: "center", marginBottom: "2em", marginTop: "1em" }}>
+        <Button type="primary" size="large" onClick={() => navigate('/add')}>
+           + Add Book
         </Button>
       </div>
+
+      <Divider>My Books List</Divider>
       
-      <div style={{ display: "flex", justifyContent: "center", marginBottom: "2em" }}>
-        <AddBook categories={categories} onBookAdded={handleAddBook}/>
-      </div>
-      <Divider>
-        My Books List
-      </Divider>
       <Spin spinning={loading}>
         <BookList 
           data={bookData} 
           onLiked={handleLikeBook}
           onDeleted={handleDeleteBook}
-          onEdit={book => setEditBook(book)}
+          onEdit={book => navigate(`/edit/${book.id}`)}
         />
       </Spin>
-      <EditBook 
-        book={editBook} 
-        categories={categories} 
-        open={editBook !== null} 
-        onCancel={() => setEditBook(null)} 
-        onSave={handleEditBook} />
     </>
   )
 }

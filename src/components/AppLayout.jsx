@@ -26,7 +26,7 @@ export default function AppLayout() {
         padding: '0 20px',
         background: '#001529' 
       }}>
-        {/* ฝั่งซ้าย: ชื่อร้านหนังสือ */}
+        {/* ชื่อร้านหนังสือ */}
         <div style={{ color: 'white', fontSize: '18px', fontWeight: 'bold' }}>
           📚 Book Store
         </div>
